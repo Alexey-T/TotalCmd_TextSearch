@@ -1,6 +1,6 @@
 
 1.4.5 (jan 2017)
-chg: compiled in Lazarus 1.7
+chg: ported to Lazarus 1.7
 chg: codepages koi8/iso - dead, removed
 fix: bug in getting temp filename (miss last \)
 

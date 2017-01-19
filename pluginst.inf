@@ -1,6 +1,5 @@
 [PluginInstall]
-Description=TextSearch plugin
-DescriptionRus=Плагин TextSearch
+Description=TextSearch - plugin for full-text search using text-converters
 Type=wdx
 File=TextSearch.wdx
 DefaultDir=TextSearch

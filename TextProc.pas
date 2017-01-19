@@ -28,7 +28,7 @@ var
 implementation
 
 uses
-  Windows, SysUtils, SProc, SConvert,
+  SysUtils, SProc, SConvert,
   FileUtil, FProc;
 
 //TText
@@ -80,7 +80,7 @@ var
   f: System.Text;
 begin
   if FBoxEnabled then
-    MessageBox(0, PChar(S), 'TextSearch plugin', MB_OK or MB_ICONERROR or MB_TASKMODAL);
+    DoErrorMessage(S);
 
   if FLogEnabled then
     begin
@@ -157,7 +157,7 @@ begin
 
   Dir:= ExtractFileDir(GetPluginFilename);
   Out:= GetTempDir+'\'+sTempName;
-  OutShort:= FShortName(GetTempDir)+'\'+sTempName;
+  OutShort:= ExtractShortPathName(GetTempDir)+'\'+sTempName;
 
   //----------------------------------------------------------
   //Process macros
@@ -180,16 +180,16 @@ begin
   //{Home:xxxx}
 
   ParamHome:= CmdMacroParam(Cmd, 'Home');
-  ParamHome:= SExpandVars(ParamHome);
+  ParamHome:= DoExpandVars(ParamHome);
 
   //{In}, {Out} etc
 
   SReplaceI(Cmd, '{In}', FFileName);
-  SReplaceI(Cmd, '{InShort}', FShortName(FFileName));
+  SReplaceI(Cmd, '{InShort}', ExtractShortPathName(FFileName));
   SReplaceI(Cmd, '{Out}', Out);
   SReplaceI(Cmd, '{OutShort}', OutShort);
 
-  Cmd:= SExpandVars(Cmd);
+  Cmd:= DoExpandVars(Cmd);
   Cmd:= Trim(Cmd); //Need to trim when multiple CPs specified
 
   //----------------------------------------------------------
@@ -199,18 +199,18 @@ begin
     //Run converter
     try
       DeleteFile(Out);
-      SetCurrentDirectory(PChar(Dir));
+      SetCurrentDir(Dir);
 
       if ParamHome <> '' then
         Dir:= ParamHome;
 
-      case FExecProcess(Cmd, Dir, SW_HIDE, true) of
-        exCannotRun:
+      case DoRunProcess(Cmd, Dir) of
+        run_CannotRun:
           begin
           Message(Format('Cannot run converter for "%s".'#13'Command: "%s".', [Ext, Cmd]));
           Exit
           end;
-        exExcept:
+        run_Exception:
           begin
           Message(Format('Converter exception for "%s".'#13'Command: "%s".', [Ext, Cmd]));
           Exit

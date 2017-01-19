@@ -1,8 +1,11 @@
 
 1.5.0 (jan 2017)
 chg: ported to Lazarus 1.7
-chg: codepages koi8/iso - dead, removed
+add: better unicode fnames support
+add: updated XDoc2Txt to 2.x
 fix: bug in getting temp filename (miss last \)
+chg: codepages koi8/iso - dead, removed
+chg: deleted UnChm program
 
 1.4.4.1 (sep 2011) 
 Add: x64 version. 

@@ -3,23 +3,22 @@ unit FProc;
 interface
 
 uses
-  Windows, SysUtils, FileUtil;
+  Windows, SysUtils, Process;
 
 type
-  TExecCode = (exOk, exCannotRun, exExcept);
+  TRunResult = (run_Ok, run_CannotRun, run_Exception);
 
-function SExpandVars(const s: string): string;
-function FExecProcess(const CmdLine, CurrentDir: string; ShowCmd: integer; DoWait: boolean): TExecCode;
-function FShortName(const fn: string): string;
+function DoExpandVars(const s: string): string;
+function DoRunProcess(const CmdLine, CurrentDir: string): TRunResult;
+procedure DoErrorMessage(const S: string);
 
 function GetPluginFilename: string;
 function ChangeFileName(const fn, NewName: string): string;
-function GetTempDir: string;
 
 
 implementation
 
-function SExpandVars(const s: string): string;
+function DoExpandVars(const s: string): string;
 var
   buf: array[0..2*1024-1] of char;
 begin
@@ -27,38 +26,33 @@ begin
 end;
 
 
-function FExecProcess(const CmdLine, CurrentDir: string; ShowCmd: integer; DoWait: boolean): TExecCode;
+function DoRunProcess(const CmdLine, CurrentDir: string): TRunResult;
 var
-  pi: TProcessInformation;
-  si: TStartupInfo;
-  code: DWord;
+  P: TProcess;
 begin
-  FillChar(pi, SizeOf(pi), 0);
-  FillChar(si, SizeOf(si), 0);
-  si.cb:= SizeOf(si);
-  si.dwFlags:= STARTF_USESHOWWINDOW;
-  si.wShowWindow:= ShowCmd;
-
-  if not CreateProcess(nil, PChar(CmdLine), nil, nil, false, 0,
-    nil, PChar(CurrentDir), si, pi) then
-    Result:= exCannotRun
-  else
-    begin
-    if DoWait then WaitForSingleObject(pi.hProcess, INFINITE);
-    if GetExitCodeProcess(pi.hProcess, code) and
-      (code >= $C0000000) and (code <= $C000010E) then
-      Result:= exExcept
-    else
-      Result:= exOk;
-    CloseHandle(pi.hThread);
-    CloseHandle(pi.hProcess);
+  P:= TProcess.Create(nil);
+  try
+    P.ShowWindow:= swoHIDE;
+    P.CurrentDirectory:= CurrentDir;
+    P.CommandLine:= CmdLine;
+    try
+      P.Execute;
+      if P.WaitOnExit then
+        Result:= run_Ok
+      else
+        Result:= run_CannotRun;
+    except
+      Result:= run_Exception;
     end;
+  finally
+    FreeAndNil(P);
+  end;
 end;
 
 
 function GetPluginFilename: string;
 begin
-  Result:= GetModuleName(HInstance);
+  Result:= GetModuleName(System.HINSTANCE);
 end;
 
 function ChangeFileName(const fn, NewName: string): string;
@@ -70,17 +64,10 @@ begin
   Result:= Copy(fn, 1, i)+NewName;
 end;
 
-function GetTempDir: string;
+procedure DoErrorMessage(const S: string);
 begin
-  Result:= SExpandVars('%temp%');
-end;
-
-
-function FShortName(const fn: string): string;
-var
-  buf: array[0..MAX_PATH] of char;
-begin
-  SetString(Result, buf, GetShortPathName(PChar(fn), buf, SizeOf(buf)));
+  MessageBoxW(0, PWChar(WideString(UTF8Decode(S))), 'TextSearch plugin',
+    MB_OK or MB_ICONERROR or MB_TASKMODAL);
 end;
 
 

@@ -19,8 +19,8 @@ begin
   if (FieldIndex<0) or (FieldIndex>=_FieldsNum) then
     Exit(FT_NOMOREFIELDS);
 
-  StrLCpyA(FieldName, _Fields[FieldIndex], MaxLen);
-  StrLCpyA(Units, _FieldUnits[FieldIndex], MaxLen);
+  StrCopyBuf(FieldName, _Fields[FieldIndex], MaxLen);
+  StrCopyBuf(Units, _FieldUnits[FieldIndex], MaxLen);
   Result:= _FieldTypes[FieldIndex];
 end;
 
@@ -67,7 +67,7 @@ begin
     if s='' then
       Exit(FT_FIELDEMPTY);
 
-    StrLCpyA(PChar(FieldValue), PChar(s), MaxLen);
+    StrCopyBuf(PChar(FieldValue), PChar(s), MaxLen);
     Exit(FT_FULLTEXT);
   end;
 

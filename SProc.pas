@@ -1,11 +1,9 @@
 unit SProc;
 
-{$MODE Delphi}
-
 interface
 
 function GetIniKey(const section, key, default, fnIni: string): string;
-procedure StrLCpyA(p, p2: PAnsiChar; MaxLen: integer);
+procedure StrCopyBuf(p, p2: PAnsiChar; MaxLen: integer);
 procedure SReplace(var s: string; const sfrom, sto: string);
 procedure SReplaceI(var s: string; const sfrom, sto: string);
 procedure SReplaceAll(var s: string; const sfrom, sto: string);
@@ -34,7 +32,7 @@ implementation
 uses
   SysUtils, Windows;
 
-procedure StrLCpyA(p, p2: PAnsiChar; MaxLen: integer);
+procedure StrCopyBuf(p, p2: PAnsiChar; MaxLen: integer);
 begin
   FillChar(p^, MaxLen, 0);
   lstrcpynA(p, p2, MaxLen);

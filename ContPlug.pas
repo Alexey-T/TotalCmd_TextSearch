@@ -1,8 +1,6 @@
 //Interface version 1.2
 unit ContPlug;
 
-{$MODE Delphi}
-
 interface
 
 uses Windows;

@@ -1,7 +1,5 @@
 unit SConvert;
 
-{$MODE Delphi}
-
 interface
 
 uses

@@ -1,8 +1,4 @@
-{$I-}
-
 unit TextProc;
-
-{$MODE Delphi}
 
 interface
 
@@ -202,7 +198,7 @@ begin
   if Pos(' ', Cmd) > 0 then
     //Run converter
     try
-      DeleteFile(PChar(Out));
+      DeleteFile(Out);
       SetCurrentDirectory(PChar(Dir));
 
       if ParamHome <> '' then
@@ -221,18 +217,20 @@ begin
           end;
       end;
 
-      if not FReadToString(Out, FText) then
+      FText:= ReadFileToString(Out);
+      if FText='' then
         begin
         Message(Format('Cannot convert file "%s" to "%s".'#13'Command: "%s".', [FFileName, Out, Cmd]));
         Exit
         end;
     finally
-      DeleteFile(PChar(Out));
+      DeleteFile(Out);
     end
   else
     //Read directly
     begin
-    if not FReadToString(FFileName, FText) then
+    FText:= ReadFileToString(FFileName);
+    if FText='' then
       begin
       Message(Format('Cannot read file "%s".', [FFileName]));
       Exit
@@ -246,7 +244,7 @@ begin
     begin
     S:= FText;
     FText:= '';
-    for CP:= Low(TMyCodepage) to High(TMyCodepage) do
+    for CP in TMyCodepage do
       if CP in CPs then
         FText:= FText + Conv_AnyCodepage(S, CP) + #13#10;
     end;

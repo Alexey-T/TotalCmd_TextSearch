@@ -6,6 +6,7 @@ type
   TText = class
     private
       FFileName: string;
+      FTempPath: string;
       FText: string;
       FLogFileName: string;
       FLogEnabled: boolean;
@@ -35,6 +36,7 @@ uses
 constructor TText.Create;
 begin
   Clear;
+  FTempPath:= GetTempDir;
 end;
 
 destructor TText.Destroy;
@@ -96,7 +98,7 @@ end;
 
 procedure TText.InitLogging;
 begin
-  FLogFileName:= GetTempDir+'\TextSearch.log';
+  FLogFileName:= FTempPath+'TextSearch.log';
   FLogEnabled:= boolean(StrToInt(GetIniKey('Options', 'Log', '0', ConfigIni)));
   FBoxEnabled:= boolean(StrToInt(GetIniKey('Options', 'ShowErrors', '1', ConfigIni)));
 end;
@@ -156,8 +158,8 @@ begin
     end;
 
   Dir:= ExtractFileDir(GetPluginFilename);
-  Out:= GetTempDir+'\'+sTempName;
-  OutShort:= ExtractShortPathName(GetTempDir)+'\'+sTempName;
+  Out:= FTempPath+sTempName;
+  OutShort:= ExtractShortPathName(FTempPath)+sTempName;
 
   //----------------------------------------------------------
   //Process macros

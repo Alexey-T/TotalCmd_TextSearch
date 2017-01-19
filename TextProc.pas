@@ -25,74 +25,15 @@ type
     end;
 
 var
-  Text: TText;
-  Ini: string;
+  TextObj: TText;
+  ConfigIni: string;
 
 
 implementation
 
 uses
   Windows, SysUtils, SProc, SConvert,
-  FProc;
-
-type
-  TMyCodepage = (
-    cpUnknown,
-    cpANSI,
-    cpOEM,
-    cpUTF8,
-    cpUTF16,
-    cpUTF16BE,
-    cpUTF16LE,
-    cpRTF
-    );
-
-const
-  cCodepageNames: array[TMyCodepage] of string = (
-    '',
-    'ANSI',
-    'OEM',
-    'UTF8',
-    'UTF16',
-    'UTF16BE',
-    'UTF16LE',
-    'RTF'
-    );
-
-function SCodepageIdToCodepage(const S: string): TMyCodepage;
-var
-  i: TMyCodepage;
-begin
-  Result:= cpUnknown;
-  for i in TMyCodepage do
-    if S = cCodepageNames[i] then
-      begin Result:= i; Break end;
-end;
-
-function SConvertFromCodepage(const S: string; CP: TMyCodepage): string;
-begin
-  Result:= '';
-  case CP of
-    cpANSI:
-      Result:= S;
-    cpOEM:
-      begin
-        SetLength(Result, Length(S));
-        OemToAnsiBuff(PChar(S), PChar(Result), Length(S));
-      end;
-    cpUTF8:
-      Result:= Conv_Utf8_ToANSI(S);
-    cpUTF16:
-      Result:= Conv_UnicodeAuto_ToANSI(S);
-    cpUTF16BE:
-      Result:= Conv_UnicodeBE_ToANSI(S);
-    cpUTF16LE:
-      Result:= Conv_UnicodeLE_ToANSI(S);
-    cpRTF:
-      Result:= Conv_RtfToText(S);
-  end;
-end;
-
+  FileUtil, FProc;
 
 //TText
 constructor TText.Create;
@@ -160,8 +101,8 @@ end;
 procedure TText.InitLogging;
 begin
   FLogFileName:= GetTempDir+'\TextSearch.log';
-  FLogEnabled:= boolean(StrToInt(GetIniKey('Options', 'Log', '0', Ini)));
-  FBoxEnabled:= boolean(StrToInt(GetIniKey('Options', 'ShowErrors', '1', Ini)));
+  FLogEnabled:= boolean(StrToInt(GetIniKey('Options', 'Log', '0', ConfigIni)));
+  FBoxEnabled:= boolean(StrToInt(GetIniKey('Options', 'ShowErrors', '1', ConfigIni)));
 end;
 
 
@@ -195,20 +136,20 @@ begin
   if Ext <> '' then
     Delete(Ext, 1, 1);
 
-  Cmd:= GetIniKey('Converters', Ext, '', Ini);
+  Cmd:= GetIniKey('Converters', Ext, '', ConfigIni);
   CmdRequired:= false;
 
   //Extension points to another extension:
   if (Cmd <> '') and (Pos(' ', Cmd) = 0) and (Pos('{', Cmd) = 0) then
     begin
-    Cmd:= GetIniKey('Converters', Cmd, '', Ini);
+    Cmd:= GetIniKey('Converters', Cmd, '', ConfigIni);
     CmdRequired:= true;
     end
   else
   //Try to find the '*' converter:
   if (Cmd = '') then
     begin
-    Cmd:= GetIniKey('Converters', '*', '', Ini);
+    Cmd:= GetIniKey('Converters', '*', '', ConfigIni);
     end;
 
   if Cmd='' then
@@ -231,7 +172,7 @@ begin
   repeat
     S:= CmdMacroParam(Cmd, 'CP');
     if S = '' then Break;
-    CP:= SCodepageIdToCodepage(S);
+    CP:= CodepageStringToCodepageId(S);
     if CP = cpUnknown then
       begin
       Message(Format('Unknown codepage specified for "%s" converter: "%s".', [Ext, S]));
@@ -307,7 +248,7 @@ begin
     FText:= '';
     for CP:= Low(TMyCodepage) to High(TMyCodepage) do
       if CP in CPs then
-        FText:= FText + SConvertFromCodepage(S, CP) + #13#10;
+        FText:= FText + Conv_AnyCodepage(S, CP) + #13#10;
     end;
 
   //----------------------------------------------------------
@@ -321,15 +262,16 @@ end;
 
 
 var
-  ss: string;
+  SampleIni: string;
+
 initialization
-  Ini:= ChangeFileName(GetPluginFilename, 'TextSearch.ini');
-  ss:= ChangeFileName(GetPluginFilename, 'TextSearch.Sample.ini');
-  if not FileExists(Ini) then
-    CopyFile(PChar(ss), PChar(Ini), true);
-  Text:= TText.Create;
+  ConfigIni:= ChangeFileName(GetPluginFilename, 'TextSearch.ini');
+  SampleIni:= ChangeFileName(GetPluginFilename, 'TextSearch.Sample.ini');
+  if not FileExists(ConfigIni) and FileExists(SampleIni) then
+    CopyFile(SampleIni, ConfigIni);
+  TextObj:= TText.Create;
 
 finalization
-  FreeAndNil(Text);
+  FreeAndNil(TextObj);
 
 end.

@@ -6,7 +6,6 @@ interface
 
 function GetIniKey(const section, key, default, fnIni: string): string;
 procedure StrLCpyA(p, p2: PAnsiChar; MaxLen: integer);
-procedure StrLCpyW(p, p2: PWideChar; MaxLen: integer);
 procedure SReplace(var s: string; const sfrom, sto: string);
 procedure SReplaceI(var s: string; const sfrom, sto: string);
 procedure SReplaceAll(var s: string; const sfrom, sto: string);

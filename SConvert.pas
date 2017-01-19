@@ -2,25 +2,80 @@ unit SConvert;
 
 {$MODE Delphi}
 
-interface 
+interface
+
+uses
+  Windows, SysUtils;
 
 type
-  TCodepage = array[0 .. $7F] of char; 
+  TMyCodepage = (
+    cpUnknown,
+    cpANSI,
+    cpOEM,
+    cpUTF8,
+    cpUTF16,
+    cpUTF16BE,
+    cpUTF16LE,
+    cpRTF
+    );
 
-function Conv_UnicodeAuto_ToANSI(const S: string): string;
-function Conv_UnicodeBE_ToANSI(const S: string): string;
-function Conv_UnicodeLE_ToANSI(const S: string): string;
-function Conv_Utf8_ToANSI(const S: string): string;
-function Conv_RtfToText(const Value: String): String;
+const
+  cMyCodepageNames: array[TMyCodepage] of string = (
+    '',
+    'ANSI',
+    'OEM',
+    'UTF8',
+    'UTF16',
+    'UTF16BE',
+    'UTF16LE',
+    'RTF'
+    );
+
+
+function Conv_WideData(const S: string; IsBE: boolean): string;
+function Conv_WideData_Detect(const S: string): string;
+function Conv_UTF8Data(const S: string): string;
+function Conv_RTF(const Value: string): string;
+function Conv_OemToAnsi(const S: string): string;
+
+function Conv_AnyCodepage(const S: string; CP: TMyCodepage): string;
+function CodepageStringToCodepageId(const S: string): TMyCodepage;
 
 
 implementation 
 
-//-----------------------------------------------------------
-{
-From Universal Viewer, SProc.pas
-}
+function CodepageStringToCodepageId(const S: string): TMyCodepage;
+var
+  i: TMyCodepage;
+begin
+  Result:= cpUnknown;
+  for i in TMyCodepage do
+    if S=cMyCodepageNames[i] then Exit(i);
+end;
 
+function Conv_AnyCodepage(const S: string; CP: TMyCodepage): string;
+begin
+  Result:= '';
+  case CP of
+    cpANSI:
+      Result:= S;
+    cpOEM:
+      Result:= Conv_OemToAnsi(S);
+    cpUTF8:
+      Result:= Conv_UTF8Data(S);
+    cpUTF16:
+      Result:= Conv_WideData_Detect(S);
+    cpUTF16BE:
+      Result:= Conv_WideData(S, true);
+    cpUTF16LE:
+      Result:= Conv_WideData(S, false);
+    cpRTF:
+      Result:= Conv_RTF(S);
+  end;
+end;
+
+
+//-----------------------------------------------------------
 function SetStringW(Buffer: PChar; BufSize: Integer; SwapBytes: Boolean): WideString;
 var
   P: PChar;
@@ -46,34 +101,39 @@ begin
   end;
 end;
 
-function Conv_UnicodeAuto_ToANSI(const S: string): string;
-begin
-  Result:= SetStringW(PChar(S), Length(S), (Length(S) >= 2) and (S[1] = #$FE) and (S[2] = #$FF));
-end;
 
-function Conv_UnicodeBE_ToANSI(const S: string): string;
-begin
-  Result:= SetStringW(PChar(S), Length(S), true);
-end;
-
-function Conv_UnicodeLE_ToANSI(const S: string): string;
-begin
-  Result:= SetStringW(PChar(S), Length(S), false);
-end;
-
-function Conv_Utf8_ToAnsi(const S: string): string;
+function Conv_WideString(const S: WideString): string;
 var
-  SW: Widestring;
   i: integer;
 begin
-  SW:= UTF8Decode(S);
-  SetLength(Result, Length(SW));
-  for i:= 1 to Length(SW) do
-    Result[i]:= Char(SW[i]);
+  SetLength(Result, Length(S));
+  for i:= 1 to Length(S) do
+    Result[i]:= Char(S[i]);
+end;
+
+function Conv_WideData(const S: string; IsBE: boolean): string;
+var
+  SW: WideString;
+begin
+  SW:= SetStringW(PChar(S), Length(S), IsBE);
+  Result:= Conv_WideString(SW);
+end;
+
+function Conv_WideData_Detect(const S: string): string;
+var
+  IsBE: boolean;
+begin
+  IsBE:= (Length(S)>=2) and (S[1] = #$FE) and (S[2] = #$FF);
+  Result:= Conv_WideData(S, IsBE);
+end;
+
+function Conv_UTF8Data(const S: string): string;
+begin
+  Result:= Conv_WideString(UTF8Decode(S));
 end;
 
 //-----------------------------------------------------------
-function SConvertToANSI(const S, CP: string): string; 
+function Conv_UsingCodepage(const S, CP: string): string;
 var 
   i: integer; 
 begin 
@@ -106,7 +166,7 @@ begin
 end;
 
 {Convert RTF enabled text to plain.}
-function Conv_RtfToText(const Value: String): String;
+function Conv_RTF(const Value: String): String;
 var
   i: Word;
   tag: Boolean;
@@ -149,6 +209,12 @@ begin
     if tag then
       st := st + Value[i + 1];
   end;
+end;
+
+function Conv_OemToAnsi(const S: string): string;
+begin
+  SetLength(Result, Length(S));
+  OemToAnsiBuff(PChar(S), PChar(Result), Length(S));
 end;
 
 

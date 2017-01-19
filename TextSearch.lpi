@@ -26,7 +26,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <UnitOutputDirectory Value="out64"/>
+            <UnitOutputDirectory Value="lib\x64"/>
           </SearchPaths>
           <Parsing>
             <SyntaxOptions>
@@ -34,16 +34,17 @@
             </SyntaxOptions>
           </Parsing>
           <CodeGeneration>
-            <Checks>
-              <RangeChecks Value="True"/>
-            </Checks>
             <TargetCPU Value="x86_64"/>
+            <Optimizations>
+              <OptimizationLevel Value="2"/>
+            </Optimizations>
           </CodeGeneration>
           <Linking>
             <Debugging>
               <GenerateDebugInfo Value="False"/>
               <UseExternalDbgSyms Value="True"/>
             </Debugging>
+            <LinkSmart Value="True"/>
             <Options>
               <Win32>
                 <GraphicApplication Value="True"/>
@@ -102,7 +103,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <UnitOutputDirectory Value="out32"/>
+      <UnitOutputDirectory Value="lib\x32"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
@@ -110,16 +111,17 @@
       </SyntaxOptions>
     </Parsing>
     <CodeGeneration>
-      <Checks>
-        <RangeChecks Value="True"/>
-      </Checks>
       <TargetCPU Value="i386"/>
+      <Optimizations>
+        <OptimizationLevel Value="2"/>
+      </Optimizations>
     </CodeGeneration>
     <Linking>
       <Debugging>
         <GenerateDebugInfo Value="False"/>
         <UseExternalDbgSyms Value="True"/>
       </Debugging>
+      <LinkSmart Value="True"/>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>

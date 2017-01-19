@@ -1,10 +1,8 @@
 library TextSearch;
 
-{$MODE Delphi}
-
 uses
-  Windows, SysUtils, ContPlug,
-  SProc, FProc, TextProc;
+  SysUtils, ContPlug,
+  SProc, TextProc;
 
 const
   _FieldsNum = 1;
@@ -12,65 +10,66 @@ const
   _FieldTypes: array[0.._FieldsNum-1] of integer = (FT_FULLTEXT);
   _FieldUnits: array[0.._FieldsNum-1] of PChar = ('');
 
-//--------------------------------------------
+
 function ContentGetSupportedField(
   FieldIndex: integer;
-  FieldName, Units: pAnsiChar;
+  FieldName, Units: PChar;
   maxlen: integer): integer; stdcall;
 begin
   if (FieldIndex<0) or (FieldIndex>=_FieldsNum) then
-    begin Result:= FT_NOMOREFIELDS; Exit end;
+    Exit(FT_NOMOREFIELDS);
 
-  StrLCpyA(FieldName, PAnsiChar(Ansistring(_Fields[FieldIndex])), MaxLen);
-  StrLCpyA(Units, PAnsiChar(Ansistring(_FieldUnits[FieldIndex])), MaxLen);
+  StrLCpyA(FieldName, _Fields[FieldIndex], MaxLen);
+  StrLCpyA(Units, _FieldUnits[FieldIndex], MaxLen);
   Result:= _FieldTypes[FieldIndex];
 end;
 
-//--------------------------------------------
-function ContentGetValue(fn: pAnsiChar;
+
+function ContentGetValue(
+  NamePtr: PChar;
   FieldIndex, UnitIndex: integer;
   FieldValue: PAnsiChar;
-  maxlen, flags: integer): integer; stdcall;
+  MaxLen, Flags: integer): integer; stdcall;
 begin
   Result:= FT_FIELDEMPTY;
 end;
 
-function ContentGetValueW(fn: pWideChar;
+
+function ContentGetValueW(
+  NamePtr: PWideChar;
   FieldIndex, UnitIndex: integer;
   FieldValue: PByte;
-  maxlen, flags: integer): integer; stdcall;
+  MaxLen, Flags: integer): integer; stdcall;
 var
-  s: string;  
+  Filename, s: string;
 begin
-  if (flags and CONTENT_DELAYIFSLOW)>0 then
-    begin Result:= FT_DELAYED; Exit end;
+  if (Flags and CONTENT_DELAYIFSLOW)>0 then
+    Exit(FT_DELAYED);
 
-  //Text field
   if (FieldIndex=Pred(_FieldsNum)) then
-    begin
+  begin
     //Clear cache
     if UnitIndex=-1 then
     begin
-      Text.Clear;
-      Result:= FT_FIELDEMPTY;
-      Exit
+      TextObj.Clear;
+      Exit(FT_FIELDEMPTY);
     end;
 
     //MessageBox(0, PChar(IntToStr(UnitIndex)), 'UnitIndex', MB_OK);
     if UnitIndex=0 then
-      if not Text.ReadFile(fn) then
-        begin Result:= FT_FILEERROR; Exit end;
-
-    s:= Copy(Text.Text, UnitIndex+1, MaxLen);
-    if s='' then
-      Result:= FT_FIELDEMPTY
-    else
     begin
-      StrLCpyA(PAnsiChar(FieldValue), PAnsiChar(Ansistring(s)), MaxLen);
-      Result:= FT_FULLTEXT;
+      Filename:= UTF8Encode(WideString(NamePtr));
+      if not TextObj.ReadFile(Filename) then
+        Exit(FT_FILEERROR);
     end;
-    Exit;
-    end;
+
+    s:= Copy(TextObj.Text, UnitIndex+1, MaxLen);
+    if s='' then
+      Exit(FT_FIELDEMPTY);
+
+    StrLCpyA(PChar(FieldValue), PChar(s), MaxLen);
+    Exit(FT_FULLTEXT);
+  end;
 
   Result:= FT_FIELDEMPTY;
 end;

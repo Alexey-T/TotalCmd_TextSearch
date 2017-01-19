@@ -1,0 +1,27 @@
+
+1.4.5 (jan 2017)
+chg: compiled in Lazarus 1.7
+chg: codepages koi8/iso - dead, removed
+fix: bug in getting temp filename (miss last \)
+
+1.4.4.1 (sep 2011) 
+Add: x64 version. 
+Chg: src update for Delphi XE2. 
+
+1.4.3 (nov 2010) 
+Added GetTextIFilter converter. 
+
+1.4.2 (jan 2010): 
+Added: XDoc2txt converter. 
+Removed: Xpdf converter. 
+Removed: KOI8U codepage. KOI8R renamed to KOI8. 
+Added: If converter crashes, msgbox is shown. 
+
+1.4.0 (09.2007): 
+Added: Multiple codepages search, see the description in Readme. 
+Added: ANSI "codepage" for multiple codepages search. 
+Added: "*" extension can be specified to do search in all files. 
+Fixed: Zeroes in binary files could stop search. 
+
+1.0.0 (08.2007): 
+Initial 

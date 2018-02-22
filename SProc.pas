@@ -4,6 +4,7 @@ interface
 
 function GetIniKey(const section, key, default, fnIni: string): string;
 procedure StrCopyBuf(p, p2: PAnsiChar; MaxLen: integer);
+procedure StrCopyBufW(p, p2: PWideChar; MaxLen: integer);
 procedure SReplace(var s: string; const sfrom, sto: string);
 procedure SReplaceI(var s: string; const sfrom, sto: string);
 procedure SReplaceAll(var s: string; const sfrom, sto: string);
@@ -41,6 +42,12 @@ end;
 procedure StrLCpyW(p, p2: PWideChar; MaxLen: integer);
 begin
   FillChar(p^, MaxLen, 0);
+  lstrcpynW(p, p2, MaxLen);
+end;
+
+procedure StrCopyBufW(p, p2: PWideChar; MaxLen: integer);
+begin
+  FillChar(p^, 2*MaxLen, 0);
   lstrcpynW(p, p2, MaxLen);
 end;
 

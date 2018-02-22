@@ -30,8 +30,8 @@ const
     );
 
 
-function Conv_WideData(const S: string; IsBE: boolean): string;
-function Conv_WideData_Detect(const S: string): string;
+function Conv_WideData(const S: string; IsBE: boolean): Widestring;
+function Conv_WideData_Detect(const S: string): Widestring;
 function Conv_UTF8Data(const S: string): string;
 function Conv_RTF(const Value: string): string;
 function Conv_OemToAnsi(const S: string): string;
@@ -56,19 +56,19 @@ begin
   Result:= '';
   case CP of
     cpANSI:
-      Result:= S;
+      Result:= UTF8Encode(S);
     cpOEM:
-      Result:= Conv_OemToAnsi(S);
+      Result:= UTF8Encode(Conv_OemToAnsi(S));
     cpUTF8:
-      Result:= Conv_UTF8Data(S);
+      Result:= S;
     cpUTF16:
-      Result:= Conv_WideData_Detect(S);
+      Result:= UTF8Encode(Conv_WideData_Detect(S));
     cpUTF16BE:
-      Result:= Conv_WideData(S, true);
+      Result:= UTF8Encode(Conv_WideData(S, true));
     cpUTF16LE:
-      Result:= Conv_WideData(S, false);
+      Result:= UTF8Encode(Conv_WideData(S, false));
     cpRTF:
-      Result:= Conv_RTF(S);
+      Result:= UTF8Encode(Conv_RTF(S));
   end;
 end;
 
@@ -109,15 +109,12 @@ begin
     Result[i]:= Char(S[i]);
 end;
 
-function Conv_WideData(const S: string; IsBE: boolean): string;
-var
-  SW: WideString;
+function Conv_WideData(const S: string; IsBE: boolean): Widestring;
 begin
-  SW:= SetStringW(PChar(S), Length(S), IsBE);
-  Result:= Conv_WideString(SW);
+  Result:= SetStringW(PChar(S), Length(S), IsBE);
 end;
 
-function Conv_WideData_Detect(const S: string): string;
+function Conv_WideData_Detect(const S: string): Widestring;
 var
   IsBE: boolean;
 begin
@@ -164,7 +161,7 @@ begin
 end;
 
 {Convert RTF enabled text to plain.}
-function Conv_RTF(const Value: String): String;
+function Conv_RTF(const Value: string): string;
 var
   i: Word;
   tag: Boolean;

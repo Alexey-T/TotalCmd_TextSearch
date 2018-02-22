@@ -7,7 +7,7 @@ type
     private
       FFileName: string;
       FTempPath: string;
-      FText: string;
+      FText: string; //now it's utf8
       FLogFileName: string;
       FLogEnabled: boolean;
       FBoxEnabled: boolean;

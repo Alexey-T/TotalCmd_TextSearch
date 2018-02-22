@@ -5,10 +5,10 @@ uses
   SProc, TextProc;
 
 const
-  _FieldsNum = 1;
-  _Fields: array[0.._FieldsNum-1] of PChar = ('Text');
-  _FieldTypes: array[0.._FieldsNum-1] of integer = (FT_FULLTEXT);
-  _FieldUnits: array[0.._FieldsNum-1] of PChar = ('');
+  _FieldsNum = 2;
+  _Fields: array[0.._FieldsNum-1] of PChar = ('Text', 'Text (ansi)');
+  _FieldTypes: array[0.._FieldsNum-1] of integer = (FT_FULLTEXTW, FT_FULLTEXT);
+  _FieldUnits: array[0.._FieldsNum-1] of PChar = ('', '');
 
 
 function ContentGetSupportedField(
@@ -41,12 +41,13 @@ function ContentGetValueW(
   FieldValue: PByte;
   MaxLen, Flags: integer): integer; stdcall;
 var
-  Filename, s: string;
+  Filename, StrA: string;
+  StrW: Widestring;
 begin
   if (Flags and CONTENT_DELAYIFSLOW)>0 then
     Exit(FT_DELAYED);
 
-  if (FieldIndex=Pred(_FieldsNum)) then
+  if (FieldIndex=0) or (FieldIndex=1) then
   begin
     //Clear cache
     if UnitIndex=-1 then
@@ -63,12 +64,21 @@ begin
         Exit(FT_FILEERROR);
     end;
 
-    s:= Copy(TextObj.Text, UnitIndex+1, MaxLen);
-    if s='' then
+    StrW:= Copy(UTF8Decode(TextObj.Text), UnitIndex+1, MaxLen);
+    if StrW='' then
       Exit(FT_FIELDEMPTY);
 
-    StrCopyBuf(PChar(FieldValue), PChar(s), MaxLen);
-    Exit(FT_FULLTEXT);
+    if FieldIndex=0 then
+    begin
+      StrCopyBufW(PWideChar(FieldValue), PWideChar(StrW), MaxLen);
+      Exit(FT_FULLTEXTW);
+    end
+    else
+    begin
+      StrA:= StrW;
+      StrCopyBuf(PChar(FieldValue), PChar(StrA), MaxLen);
+      Exit(FT_FULLTEXT);
+    end;
   end;
 
   Result:= FT_FIELDEMPTY;

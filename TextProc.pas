@@ -8,6 +8,7 @@ type
       FFileName: string;
       FTempPath: string;
       FText: string; //now it's utf8
+      FTextW: Widestring;
       FLogFileName: string;
       FLogEnabled: boolean;
       FBoxEnabled: boolean;
@@ -19,7 +20,7 @@ type
       procedure Message(const S: string);
       procedure InitLogging;
       function ReadFile(const fn: string): boolean;
-      property Text: string read FText;
+      property TextW: Widestring read FTextW;
     end;
 
 var
@@ -49,6 +50,7 @@ procedure TText.Clear;
 begin
   FFileName:= '';
   FText:= '';
+  FTextW:= '';
 end;
 
 
@@ -121,6 +123,7 @@ begin
 
   FFileName:= fn;
   FText:= '';
+  FTextW:= '';
 
   if not FileExists(FFileName) then
     Exit;
@@ -254,11 +257,13 @@ begin
         FText:= FText + Conv_AnyCodepage(S, CP) + #13#10;
     end;
 
+  FTextW:= UTF8Decode(FText);
+
   //----------------------------------------------------------
-  //Delete zeroes (file may be binary):
-  for i:= 1 to Length(FText) do
-    if FText[i]=#0 then
-      FText[i]:= ' ';
+  //Delete zeroes (file may be binary)
+  for i:= 1 to Length(FTextW) do
+    if FTextW[i]=#0 then
+      FTextW[i]:= ' ';
 
   Result:= true;
 end;

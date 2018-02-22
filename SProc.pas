@@ -47,8 +47,8 @@ end;
 
 procedure StrCopyBufW(p, p2: PWideChar; MaxLen: integer);
 begin
-  FillChar(p^, 2*MaxLen, 0);
-  lstrcpynW(p, p2, MaxLen);
+  FillChar(p^, MaxLen, 0);
+  lstrcpynW(p, p2, MaxLen div 2);
 end;
 
 procedure SReplace(var s: string; const sfrom, sto: string);

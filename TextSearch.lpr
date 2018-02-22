@@ -5,10 +5,10 @@ uses
   SProc, TextProc;
 
 const
-  _FieldsNum = 2;
-  _Fields: array[0.._FieldsNum-1] of PChar = ('Text', 'Text (ansi)');
-  _FieldTypes: array[0.._FieldsNum-1] of integer = (FT_FULLTEXTW, FT_FULLTEXT);
-  _FieldUnits: array[0.._FieldsNum-1] of PChar = ('', '');
+  _FieldsNum = 1;
+  _Fields: array[0.._FieldsNum-1] of PChar = ('Text');
+  _FieldTypes: array[0.._FieldsNum-1] of integer = (FT_FULLTEXT);
+  _FieldUnits: array[0.._FieldsNum-1] of PChar = ('');
 
 
 function ContentGetSupportedField(

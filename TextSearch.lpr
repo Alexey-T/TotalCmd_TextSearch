@@ -64,7 +64,7 @@ begin
         Exit(FT_FILEERROR);
     end;
 
-    StrW:= Copy(UTF8Decode(TextObj.Text), UnitIndex+1, MaxLen);
+    StrW:= Copy(TextObj.TextW, UnitIndex div 2+1, MaxLen div 2);
     if StrW='' then
       Exit(FT_FIELDEMPTY);
 
@@ -73,12 +73,14 @@ begin
       StrCopyBufW(PWideChar(FieldValue), PWideChar(StrW), MaxLen);
       Exit(FT_FULLTEXTW);
     end
+    {
     else
     begin
-      StrA:= StrW;
+      StrA:= string(StrW);
       StrCopyBuf(PChar(FieldValue), PChar(StrA), MaxLen);
       Exit(FT_FULLTEXT);
     end;
+    }
   end;
 
   Result:= FT_FIELDEMPTY;

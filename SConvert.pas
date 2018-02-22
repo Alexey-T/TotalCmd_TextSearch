@@ -32,7 +32,6 @@ const
 
 function Conv_WideData(const S: string; IsBE: boolean): Widestring;
 function Conv_WideData_Detect(const S: string): Widestring;
-function Conv_UTF8Data(const S: string): string;
 function Conv_RTF(const Value: string): string;
 function Conv_OemToAnsi(const S: string): string;
 
@@ -120,11 +119,6 @@ var
 begin
   IsBE:= (Length(S)>=2) and (S[1] = #$FE) and (S[2] = #$FF);
   Result:= Conv_WideData(S, IsBE);
-end;
-
-function Conv_UTF8Data(const S: string): string;
-begin
-  Result:= Conv_WideString(UTF8Decode(S));
 end;
 
 //-----------------------------------------------------------

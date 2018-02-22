@@ -47,7 +47,7 @@ begin
   if (Flags and CONTENT_DELAYIFSLOW)>0 then
     Exit(FT_DELAYED);
 
-  if (FieldIndex=0) or (FieldIndex=1) then
+  if (FieldIndex=0) then
   begin
     //Clear cache
     if UnitIndex=-1 then
@@ -64,23 +64,13 @@ begin
         Exit(FT_FILEERROR);
     end;
 
+    //UnitIndex is bytes, MaxLen too
     StrW:= Copy(TextObj.TextW, UnitIndex div 2+1, MaxLen div 2);
     if StrW='' then
       Exit(FT_FIELDEMPTY);
 
-    if FieldIndex=0 then
-    begin
-      StrCopyBufW(PWideChar(FieldValue), PWideChar(StrW), MaxLen);
-      Exit(FT_FULLTEXTW);
-    end
-    {
-    else
-    begin
-      StrA:= string(StrW);
-      StrCopyBuf(PChar(FieldValue), PChar(StrA), MaxLen);
-      Exit(FT_FULLTEXT);
-    end;
-    }
+    StrCopyBufW(PWideChar(FieldValue), PWideChar(StrW), MaxLen);
+    Exit(FT_FULLTEXTW); //fulltextW
   end;
 
   Result:= FT_FIELDEMPTY;

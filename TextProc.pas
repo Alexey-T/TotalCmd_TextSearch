@@ -3,12 +3,11 @@ unit TextProc;
 interface
 
 type
-  TText = class
+  TTextManager = class
     private
       FFileName: string;
       FTempPath: string;
-      FText: string; //now it's utf8
-      FTextW: Widestring;
+      FTextW: UnicodeString;
       FLogFileName: string;
       FLogEnabled: boolean;
       FBoxEnabled: boolean;
@@ -20,11 +19,11 @@ type
       procedure Message(const S: string);
       procedure InitLogging;
       function ReadFile(const fn: string): boolean;
-      property TextW: Widestring read FTextW;
+      property TextW: UnicodeString read FTextW;
     end;
 
 var
-  TextObj: TText;
+  TextObj: TTextManager;
   ConfigIni: string;
 
 
@@ -34,22 +33,21 @@ uses
   SysUtils, SProc, SConvert,
   FileUtil, FProc;
 
-//TText
-constructor TText.Create;
+//TTextManager
+constructor TTextManager.Create;
 begin
   Clear;
   FTempPath:= GetTempDir;
 end;
 
-destructor TText.Destroy;
+destructor TTextManager.Destroy;
 begin
   Clear;
 end;
 
-procedure TText.Clear;
+procedure TTextManager.Clear;
 begin
   FFileName:= '';
-  FText:= '';
   FTextW:= '';
 end;
 
@@ -80,7 +78,7 @@ begin
 end;
 
 
-procedure TText.Message(const S: string);
+procedure TTextManager.Message(const S: string);
 var
   f: System.Text;
 begin
@@ -99,7 +97,7 @@ begin
     end;
 end;
 
-procedure TText.InitLogging;
+procedure TTextManager.InitLogging;
 begin
   FLogFileName:= FTempPath+'TextSearch.log';
   FLogEnabled:= GetIniKey('Options', 'Log', '0', ConfigIni)='1';
@@ -108,11 +106,11 @@ begin
 end;
 
 
-function TText.ReadFile(const fn: string): boolean;
+function TTextManager.ReadFile(const fn: string): boolean;
 const
-  sTempName = 'TextSrch.txt'; //Should be 8.3 name
+  sTempName = 'TextSrch.txt'; //8.3
 var
-  Cmd, Ext, Dir, Out, OutShort, S: string;
+  FText, Cmd, Ext, Dir, Out, OutShort, S: string;
   CPs: set of TMyCodepage;
   CP: TMyCodepage;
   ParamHome: string;
@@ -277,7 +275,7 @@ initialization
   SampleIni:= ChangeFileName(GetPluginFilename, 'TextSearch.Sample.ini');
   if not FileExists(ConfigIni) and FileExists(SampleIni) then
     CopyFile(SampleIni, ConfigIni);
-  TextObj:= TText.Create;
+  TextObj:= TTextManager.Create;
 
 finalization
   FreeAndNil(TextObj);

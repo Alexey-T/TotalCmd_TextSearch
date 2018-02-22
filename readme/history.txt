@@ -1,5 +1,6 @@
 
-1.5.1 (feb 2018)
+1.6.0 (feb 2018)
+add/change: Text field now has type ft_fulltextW and allows Unicode. needs TotalCmd from 2017+.
 add: option in config file: DeleteOutFile (0/1)
 
 1.5.0 (jan 2017)

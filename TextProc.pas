@@ -11,6 +11,7 @@ type
       FLogFileName: string;
       FLogEnabled: boolean;
       FBoxEnabled: boolean;
+      FDeleteOutFile: boolean;
     public
       constructor Create;
       destructor Destroy; override;
@@ -99,8 +100,9 @@ end;
 procedure TText.InitLogging;
 begin
   FLogFileName:= FTempPath+'TextSearch.log';
-  FLogEnabled:= boolean(StrToInt(GetIniKey('Options', 'Log', '0', ConfigIni)));
-  FBoxEnabled:= boolean(StrToInt(GetIniKey('Options', 'ShowErrors', '1', ConfigIni)));
+  FLogEnabled:= GetIniKey('Options', 'Log', '0', ConfigIni)='1';
+  FBoxEnabled:= GetIniKey('Options', 'ShowErrors', '1', ConfigIni)='1';
+  FDeleteOutFile:= GetIniKey('Options', 'DeleteOutFile', '1', ConfigIni)='1';
 end;
 
 
@@ -226,7 +228,8 @@ begin
         Exit
         end;
     finally
-      DeleteFile(Out);
+      if FDeleteOutFile then
+        DeleteFile(Out);
     end
   else
     //Read directly

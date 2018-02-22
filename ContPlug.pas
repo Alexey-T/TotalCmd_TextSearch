@@ -17,6 +17,7 @@ const
   FT_STRING = 8;
   FT_FULLTEXT = 9;
   FT_DATETIME = 10;
+  FT_FULLTEXTW = 12;
 
   // for ContentGetValue
   FT_NOSUCHFIELD = -1;

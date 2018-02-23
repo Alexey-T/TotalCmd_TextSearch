@@ -185,7 +185,6 @@ Parameters can contain the following macros/commands, at last "{In}" and "{Out}"
     Allowed values of <i>Codepage</i> are (self-descriptioned):
     <ul>
     <li> <i>ANSI</i> (has meaning only when multiple codepages are specified)
-    <li> <i>OEM</i>
     <li> <i>UTF8</i>
     <li> <i>UTF16</i> (BE or LE are detected automatically by first 2 bytes)
     <li> <i>UTF16BE</i>
@@ -246,7 +245,7 @@ To perform multiple codepages search in <b>all files</b> specify the "*" extensi
 
 <pre>
 [Converters]
-*={CP:ANSI} {CP:OEM} {CP:UTF8} {CP:UTF16}
+*={CP:ANSI} {CP:UTF8} {CP:UTF16}
 </pre>
 
 Note that the "*" converter has the lower priority,

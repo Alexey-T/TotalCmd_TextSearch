@@ -1,34 +1,38 @@
 
+1.6.1 (feb 2018)
+- fix: ANSI coding support
+* change: removed OEM coding
+
 1.6.0 (feb 2018)
-add/change: Text field now has type ft_fulltextW and allows Unicode. needs TotalCmd from 2017+.
-add: option in config file: DeleteOutFile (0/1)
++ add/change: Text field now has type ft_fulltextW and allows Unicode. needs TotalCmd from 2017+.
++ add: option in config file: DeleteOutFile (0/1)
 
 1.5.0 (jan 2017)
-chg: ported to Lazarus 1.7
-add: better unicode fnames support
-add: updated XDoc2Txt to 2.x
-fix: bug in getting temp filename (miss last \)
-chg: codepages koi8/iso - dead, removed
-chg: deleted UnChm program
++ ported to Lazarus 1.7
++ add: better unicode fnames support
++ add: updated XDoc2Txt to 2.x
+- fix: bug in getting temp filename (miss last \)
+* change: codepages koi8/iso - dead, removed
+* change: deleted UnChm program
 
 1.4.4.1 (sep 2011) 
-Add: x64 version. 
-Chg: src update for Delphi XE2. 
++ x64 version. 
++ src update for Delphi XE2. 
 
 1.4.3 (nov 2010) 
-Added GetTextIFilter converter. 
++ GetTextIFilter converter. 
 
 1.4.2 (jan 2010): 
-Added: XDoc2txt converter. 
-Removed: Xpdf converter. 
-Removed: KOI8U codepage. KOI8R renamed to KOI8. 
-Added: If converter crashes, msgbox is shown. 
++ XDoc2txt converter. 
+* removed Xpdf converter. 
+* removed KOI8U codepage. KOI8R renamed to KOI8. 
++ if converter crashes, msgbox is shown. 
 
 1.4.0 (09.2007): 
-Added: Multiple codepages search, see the description in Readme. 
-Added: ANSI "codepage" for multiple codepages search. 
-Added: "*" extension can be specified to do search in all files. 
-Fixed: Zeroes in binary files could stop search. 
++ Multiple codepages search, see the description in Readme. 
++ ANSI "codepage" for multiple codepages search. 
++ "*" extension can be specified to do search in all files. 
+- Zeroes in binary files could stop search. 
 
 1.0.0 (08.2007): 
 Initial 

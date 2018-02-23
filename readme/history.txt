@@ -1,7 +1,6 @@
 
-1.6.1 (feb 2018)
-- fix: ANSI coding support
-* change: removed OEM coding
+1.6.2 (feb 2018)
+- fix: ANSI, OEM codings support
 
 1.6.0 (feb 2018)
 + add/change: Text field now has type ft_fulltextW and allows Unicode. needs TotalCmd from 2017+.

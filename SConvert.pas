@@ -10,6 +10,7 @@ type
   TMyCodepage = (
     cpUnknown,
     cpANSI,
+    cpOEM,
     cpUTF8,
     cpUTF16,
     cpUTF16BE,
@@ -21,6 +22,7 @@ const
   cMyCodepageNames: array[TMyCodepage] of string = (
     '',
     'ANSI',
+    'OEM',
     'UTF8',
     'UTF16',
     'UTF16BE',
@@ -68,6 +70,25 @@ begin
   Result:= CP1250ToUTF8(SA);
   {$endif}
 end;
+
+function Conv_OemToUtf8(const SA: string): string;
+begin
+  {$ifdef windows}
+  case Windows.GetACP of
+    1250: Result:= CP852ToUTF8(SA);
+    1251: Result:= CP866ToUTF8(SA);
+    1252: Result:= CP850ToUTF8(SA);
+    1253: Result:= CP737ToUTF8(SA);
+    1255: Result:= CP862ToUTF8(SA);
+    1256: Result:= CP720ToUTF8(SA);
+    1257: Result:= CP775ToUTF8(SA);
+    else Result:= CP437ToUTF8(SA);
+  end;
+  {$else}
+  Result:= CP437ToUTF8(SA);
+  {$endif}
+end;
+ 
  
 function Conv_AnyCodepage(const S: string; CP: TMyCodepage): string;
 begin
@@ -75,6 +96,8 @@ begin
   case CP of
     cpANSI:
       Result:= Conv_AnsiToUtf8(S);
+    cpOEM:
+      Result:= Conv_OemToUtf8(S);
     cpUTF8:
       Result:= S;
     cpUTF16:

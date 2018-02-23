@@ -78,10 +78,10 @@ begin
     1250: Result:= CP852ToUTF8(SA);
     1251: Result:= CP866ToUTF8(SA);
     1252: Result:= CP850ToUTF8(SA);
-    1253: Result:= CP737ToUTF8(SA);
-    1255: Result:= CP862ToUTF8(SA);
-    1256: Result:= CP720ToUTF8(SA);
-    1257: Result:= CP775ToUTF8(SA);
+    //1253: Result:= CP737ToUTF8(SA);
+    //1255: Result:= CP862ToUTF8(SA);
+    //1256: Result:= CP720ToUTF8(SA);
+    //1257: Result:= CP775ToUTF8(SA);
     else Result:= CP437ToUTF8(SA);
   end;
   {$else}

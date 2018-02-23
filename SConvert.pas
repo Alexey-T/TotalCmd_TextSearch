@@ -3,13 +3,13 @@ unit SConvert;
 interface
 
 uses
-  Windows, SysUtils;
+  Windows, SysUtils,
+  LConvEncoding;
 
 type
   TMyCodepage = (
     cpUnknown,
     cpANSI,
-    cpOEM,
     cpUTF8,
     cpUTF16,
     cpUTF16BE,
@@ -21,7 +21,6 @@ const
   cMyCodepageNames: array[TMyCodepage] of string = (
     '',
     'ANSI',
-    'OEM',
     'UTF8',
     'UTF16',
     'UTF16BE',
@@ -33,7 +32,6 @@ const
 function Conv_WideData(const S: string; IsBE: boolean): Widestring;
 function Conv_WideData_Detect(const S: string): Widestring;
 function Conv_RTF(const Value: string): string;
-function Conv_OemToAnsi(const S: string): string;
 
 function Conv_AnyCodepage(const S: string; CP: TMyCodepage): string;
 function CodepageStringToCodepageId(const S: string): TMyCodepage;
@@ -50,14 +48,33 @@ begin
     if S=cMyCodepageNames[i] then Exit(i);
 end;
 
+function Conv_AnsiToUtf8(const SA: string): string;
+begin
+  {$ifdef windows}
+  case Windows.GetACP of
+    1250: Result:= CP1250ToUTF8(SA);
+    1251: Result:= CP1251ToUTF8(SA);
+    1252: Result:= CP1252ToUTF8(SA);
+    1253: Result:= CP1253ToUTF8(SA);
+    1254: Result:= CP1254ToUTF8(SA);
+    1255: Result:= CP1255ToUTF8(SA);
+    1256: Result:= CP1256ToUTF8(SA);
+    1257: Result:= CP1257ToUTF8(SA);
+    1258: Result:= CP1258ToUTF8(SA);
+    437: Result:= CP437ToUTF8(SA);
+    else Result:= CP1250ToUTF8(SA);
+  end;
+  {$else}
+  Result:= CP1250ToUTF8(SA);
+  {$endif}
+end;
+ 
 function Conv_AnyCodepage(const S: string; CP: TMyCodepage): string;
 begin
   Result:= '';
   case CP of
     cpANSI:
-      Result:= UTF8Encode(S);
-    cpOEM:
-      Result:= UTF8Encode(Conv_OemToAnsi(S));
+      Result:= Conv_AnsiToUtf8(S);
     cpUTF8:
       Result:= S;
     cpUTF16:
@@ -70,7 +87,6 @@ begin
       Result:= UTF8Encode(Conv_RTF(S));
   end;
 end;
-
 
 //-----------------------------------------------------------
 function SetStringW(Buffer: PChar; BufSize: Integer; SwapBytes: Boolean): WideString;
@@ -199,13 +215,6 @@ begin
       st := st + Value[i + 1];
   end;
 end;
-
-function Conv_OemToAnsi(const S: string): string;
-begin
-  SetLength(Result, Length(S));
-  OemToAnsiBuff(PChar(S), PChar(Result), Length(S));
-end;
-
 
 
 end. 

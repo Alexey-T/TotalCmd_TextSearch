@@ -271,8 +271,8 @@ var
   SampleIni: string;
 
 initialization
-  ConfigIni:= ChangeFileName(GetPluginFilename, 'TextSearch.ini');
-  SampleIni:= ChangeFileName(GetPluginFilename, 'TextSearch.Sample.ini');
+  ConfigIni:= ExtractFilePath(GetPluginFilename)+'TextSearch.ini';
+  SampleIni:= ExtractFilePath(GetPluginFilename)+'TextSearch.Sample.ini';
   if not FileExists(ConfigIni) and FileExists(SampleIni) then
     CopyFile(SampleIni, ConfigIni);
   TextObj:= TTextManager.Create;

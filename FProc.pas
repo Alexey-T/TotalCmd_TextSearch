@@ -3,24 +3,24 @@ unit FProc;
 interface
 
 uses
-  Windows, SysUtils, Process;
+  Windows, SysUtils,
+  Process,
+  UTF8Process;
 
 type
   TRunResult = (run_Ok, run_CannotRun, run_Exception);
 
-function DoExpandVars(const s: string): string;
 function DoRunProcess(const CmdLine, CurrentDir: string): TRunResult;
 procedure DoErrorMessage(const S: string);
-
 function GetPluginFilename: string;
-function ChangeFileName(const fn, NewName: string): string;
+function DoExpandVars(const s: string): string;
 
 
 implementation
 
 function DoExpandVars(const s: string): string;
 var
-  buf: array[0..2*1024-1] of char;
+  buf: array[0..4*1024-1] of char;
 begin
   SetString(Result, buf, ExpandEnvironmentStrings(PChar(s), buf, SizeOf(buf))-1);
 end;
@@ -28,9 +28,9 @@ end;
 
 function DoRunProcess(const CmdLine, CurrentDir: string): TRunResult;
 var
-  P: TProcess;
+  P: TProcessUTF8;
 begin
-  P:= TProcess.Create(nil);
+  P:= TProcessUTF8.Create(nil);
   try
     P.ShowWindow:= swoHIDE;
     P.CurrentDirectory:= CurrentDir;
@@ -53,15 +53,6 @@ end;
 function GetPluginFilename: string;
 begin
   Result:= GetModuleName(System.HINSTANCE);
-end;
-
-function ChangeFileName(const fn, NewName: string): string;
-var
-  i: integer;
-begin
-  i:= Length(fn);
-  while (i>0) and (fn[i]<>'\') do Dec(i);
-  Result:= Copy(fn, 1, i)+NewName;
 end;
 
 procedure DoErrorMessage(const S: string);

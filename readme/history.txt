@@ -1,4 +1,7 @@
 
+1.6.3 (mar 2016)
++ add: support Unicode command lines
+
 1.6.2 (feb 2018)
 - fix: ANSI, OEM codings support
 

@@ -87,6 +87,7 @@ begin
 
   if FLogEnabled then
     begin
+    {$I-} //required to not crash
     AssignFile(f, FLogFileName);
     Append(f);
     if IOResult <> 0 then
